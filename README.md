@@ -2,13 +2,14 @@
 a simple crm for sales
 
 @todo:
-risolvere le chiamate alle api ko!
-
-validazione dati (client e server)
-aggiungere funzione upload,delete,download allegati
-aggiungere caricamento in corso agli useeffect
-aggiungere funzione modify note,offers,quotations
-aggiungere colonna data a offers e quotations
-aggiungere un "sei sicuro?" alle azioni di cancellazione
-aggiungere funzione ricerca in customertable
-aggiungere invio campagne mail
+<ul>
+  <li>risolvere le chiamate alle api ko!</li>
+<li>validazione dati (client e server)</li>
+<li>aggiungere funzione upload,delete,download allegati</li>
+<li>aggiungere caricamento in corso agli useeffect</li>
+<li>aggiungere funzione modify note,offers,quotations</li>
+<li>aggiungere colonna data a offers e quotations</li>
+<li>aggiungere un "sei sicuro?" alle azioni di cancellazione</li>
+<li>aggiungere funzione ricerca in customertable</li>
+<li>aggiungere invio campagne mail</li>
+ </ul>
