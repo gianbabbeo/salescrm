@@ -17,7 +17,7 @@ export async function getCustomerList()
  */
  export async function getCustomerDetail(id) 
  {
-   return fetch('/api/customers/' + id).then(data => data.json());
+   return fetch(`/api/customers/${id}`).then(data => data.json());
  }
 
  /**
@@ -37,11 +37,8 @@ export async function getCustomerList()
     })
     .then(response => 
     {
-      console.log(response.status);
-      if (!response.status >= 400) throw new Error("Errore server: caricamento dati");
       return response.json();
     })
-    .catch(e=>console.log(e))
   }
 
 /**

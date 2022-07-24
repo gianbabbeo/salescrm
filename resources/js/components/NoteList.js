@@ -4,7 +4,7 @@ import {getNoteList, addNote, deleteNote} from '../services/notes.js'
 /**
  * NoteList - show notes
  */
-const NoteList = (customerId) => {
+const NoteList = (noteList) => {
     /**
      * customers, setCustomers - customers collection from db
      */
@@ -26,54 +26,12 @@ const NoteList = (customerId) => {
      */
      useEffect(() => {
         let todo = true;
-        getNoteList(customerId)
-            .then(notes => {
-                if(todo) {
-                    setNotes(notes);
-                }
-            })
+        setNotes(noteList)
         return () => todo = false;
-    }, [])
+    }, [noteList])
 
     return (
-        <div>
-            <div className="card">
-                <div className="card-header">
-                    <h5>Note</h5>
-                </div>
-            </div>
-
-        {
-        notes.length > 0 ?
-        <table className="table">
-            <tbody>
-            {notes.map( n => ( 
-                <tr key={n.id}>
-                    <td>{n.text}</td>
-                    <td><button onClick={(e) => handleDelete(n.id)}>Elimina</button></td>
-                </tr>
-            ))}      
-               <tr>
-                    <form onSubmit={(e) => handleSubmit(e)}>
-                    <td><input type="text" name="note" className="form-control" placeholder="Nuova nota..." /></td>
-                    <td><button>Aggiungi</button></td>
-                    </form>
-                </tr>
-            </tbody>
-        </table>
-
-        :   <div className="card">
-                <div className="card-body">
-                    <p>Nessuna nota per questo cliente.</p>
-
-                    <form onSubmit={(e) => handleSubmit(e)}>
-                        <input type="text" name="note" className="form-control" placeholder="Nuova nota..." />
-                        <button>Aggiungi</button>
-                    </form>
-                </div>
-            </div>
-        }
-        </div>
+        ''
     );
 }
 

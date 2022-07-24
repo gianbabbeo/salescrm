@@ -9,7 +9,7 @@
  */
  export async function getNoteList(customerId) 
  {
-   return fetch('/api/notes/' + customerId).then(data => data.json());
+   return fetch(`/api/notes/${customerId}`).then(data => data.json());
  }
  
  /**

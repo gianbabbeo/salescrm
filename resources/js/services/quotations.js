@@ -9,7 +9,7 @@
  */
  export async function getQuotationList(customerId) 
  {
-   return fetch('/api/quotations/' + customerId).then(data => data.json());
+   return fetch(`/api/quotations/${customerId}`).then(data => data.json());
  }
  
  /**

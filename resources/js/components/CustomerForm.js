@@ -10,7 +10,7 @@ const CustomerForm = ({customer, showForm}) => {
     /**
      * model, setModel - empty customer model
      */
-    const [model, setModel] = useState({id: '', name: '', address: '', phone: '', email: ''});
+    const [model, setModel] = useState({name: '', address: '', phone: '', email: ''});
     const [name, setName] = useState(null);
     const [address, setAddress] = useState(null);
     const [phone, setPhone] = useState(null);
@@ -26,8 +26,32 @@ const CustomerForm = ({customer, showForm}) => {
         c['phone'] = phone;
         c['email'] = email;
         console.log(c);
-        if (customer != null) { modCustomer(model).then(i => { }, error => {console.log(error.message)}).catch(e => console.log(e)); }
-        else { addCustomer(model).then(i => { }, error => {console.log(error.message)}).catch(e => console.log(e)); }
+        if (customer != null) 
+            { 
+            modCustomer(model)
+            .then(i => { }, 
+                error => 
+                    {
+                    console.log(error.message)})
+            .catch(e => console.log(e)
+            ); 
+            }
+        else 
+            { 
+            addCustomer(model)
+            .then(i => { console.log(response) }, 
+                error => 
+                    {
+                    console.log(error.message)
+                    console.log(response)
+                    })
+            .catch(e => 
+                {
+                console.log(e)
+                console.log(response.body)
+                }
+            ); 
+            }
     }
 
     /**

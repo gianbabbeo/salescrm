@@ -1,21 +1,65 @@
 import {React, useState, useEffect}  from 'react';
-import {getCustomerList} from '../services/customers.js'
+import {getCustomerList, addCustomer} from '../services/customers.js'
 
 /**
  * CustomerTable - show customers
+ * @param
+ * handleDetail - fallback function for parent: it sets a selected Customer Id
  */
 const CustomerTable = ({handleDetail}) => {
     /**
      * customers, setCustomers - customers collection from db
+     * model- empty customer model - @togliere ?
+     * name, setName
+     * address, setAddress
+     * phone, setPhone
+     * email, setEmail
+     * token - csfr token from meta tags
      */
     const [customers, setCustomers] = useState([]);
+    const [model, setModel] = useState({name: '', address: '', phone: '', email: ''});
+    const [name, setName] = useState(null);
+    const [address, setAddress] = useState(null);
+    const [phone, setPhone] = useState(null);
+    const [email, setEmail] = useState(null);
+    const token = document.querySelector('meta[name="token"]').getAttribute('value');
+
+    /**
+     * handleSubmit - new customer
+     */
+    const handleSubmit = (e) => 
+    {
+        e.preventDefault(); 
+
+        let c = Object.assign({}, model);
+        c['name'] = name;
+        c['address'] = address;
+        c['phone'] = phone;
+        c['email'] = email;
+ 
+        fetch( '/api/customers/', 
+        {
+            method:'post',
+            headers: 
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "X-CSRF-TOKEN": token
+            },
+            body: JSON.stringify(c)
+        })
+        .then(response => 
+        {
+            return response.json();
+        })
+    }
 
     /**
      * fetch customers
      */
-     useEffect(() => {
+    useEffect(() => {
         let todo = true;
-        getCustomerList()
+        fetch('/api/customers').then(data => data.json())
             .then(customers => {
                 if(todo) {
                     setCustomers(customers)
@@ -25,7 +69,8 @@ const CustomerTable = ({handleDetail}) => {
     }, [])
 
     return (
-        <div>
+    <div>
+        <div className="col-sm">
             <div className="card">
                 <div className="card-header">
                     <h2>Lista Clienti</h2>
@@ -58,6 +103,48 @@ const CustomerTable = ({handleDetail}) => {
             </div>
         }
         </div>
+
+        <div className="col-sm">
+        <div id="NewCustomer">
+            <h2>Aggiungi Cliente</h2>
+            <form onSubmit={(e) => handleSubmit(e)}>
+                <div className="row">
+                    <div className="col-sm">
+                        <div className="form-group">
+                            <label>Nome:</label>
+                            <input type="text" name="name"
+                            onChange={(e) => setName(e.target.value)} className="form-control" />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Indirizzo:</label>
+                            <input type="text" name="address"
+                            onChange={(e) => setAddress(e.target.value)} className="form-control" />
+                        </div>
+                    </div>
+
+                    <div className="col-sm">
+                        <div className="form-group">
+                            <label>Telefono:</label>
+                            <input type="text" name="phone"
+                            onChange={(e) => setPhone(e.target.value)} className="form-control" />
+                        </div>
+
+                        <div className="form-group">
+                            <label>E-mail:</label>
+                            <input type="text" name="email"
+                            onChange={(e) => setEmail(e.target.value)} className="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button className="btn btn-primary">Invia</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
     );
 }
 
