@@ -1,5 +1,4 @@
 import {React, useState, useEffect}  from 'react';
-import {getCustomerList, addCustomer} from '../services/customers.js'
 
 /**
  * CustomerTable - show customers
@@ -8,25 +7,27 @@ import {getCustomerList, addCustomer} from '../services/customers.js'
  */
 const CustomerTable = ({handleDetail}) => {
     /**
+     * @section CUSTOMERS TABLE
      * customers, setCustomers - customers collection from db
+     */
+    const [customers, setCustomers] = useState([]);
+
+    /**
+     * @section ADD CUSTOMER
      * model- empty customer model - @togliere ?
      * name, setName
      * address, setAddress
      * phone, setPhone
      * email, setEmail
      * token - csfr token from meta tags
+     * handleSubmit - new customer
      */
-    const [customers, setCustomers] = useState([]);
     const [model, setModel] = useState({name: '', address: '', phone: '', email: ''});
     const [name, setName] = useState(null);
     const [address, setAddress] = useState(null);
     const [phone, setPhone] = useState(null);
     const [email, setEmail] = useState(null);
     const token = document.querySelector('meta[name="token"]').getAttribute('value');
-
-    /**
-     * handleSubmit - new customer
-     */
     const handleSubmit = (e) => 
     {
         e.preventDefault(); 
@@ -54,8 +55,11 @@ const CustomerTable = ({handleDetail}) => {
         })
     }
 
+    //###########################################################################
+
     /**
-     * fetch customers
+     * @section FETCH DATA
+     * customers
      */
     useEffect(() => {
         let todo = true;
@@ -68,6 +72,11 @@ const CustomerTable = ({handleDetail}) => {
         return () => todo = false;
     }, [])
 
+    //################################################################
+    
+    /**
+     * @section RENDER
+     */
     return (
     <div>
         <div className="col-sm">

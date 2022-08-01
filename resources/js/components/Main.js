@@ -19,7 +19,7 @@ const Main = () => {
             <div className="row">
                 {
                 idDetail &&
-                <CustomerDetail idDetail={idDetail} backToTable={backToTable} />
+                <CustomerDetail idDetail={idDetail} />
                 }  
             </div>     
             <div className="row">

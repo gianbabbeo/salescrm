@@ -3,28 +3,85 @@ import {getCustomerDetail, deleteCustomer} from '../services/customers.js'
 import {getNoteList} from '../services/notes.js'
 import {getOfferList} from '../services/offers.js'
 import {getQuotationList} from '../services/quotations.js'
-import CustomerForm from './CustomerForm';
 
 /**
  * CustomerDetail
  */
-const CustomerDetail = ({idDetail, backToTable}) => {
+const CustomerDetail = ({idDetail}) => {
     /**
-     * customer, setCustomer - customer detail from db
-     * modFlag, setModFlag - plain presentation of the data or modification form
-     * handleCloseForm - clean flag and return to plain customer presentation
+     * @section MISC
      */
-     const [customer, setCustomer] = useState([]);
-     const [notes, setNotes] = useState([]);
-     const [offers, setOffers] = useState([]);
-     const [quotations, setQuotations] = useState([]);
-     const [modFlag, setModFlag] = useState(false);
-     const showModForm = () => { setModFlag(!modFlag) }
-     const handleDelete = customerId => { deleteCustomer(customerId) }
+    const token = document.querySelector('meta[name="token"]').getAttribute('value');
+    const [modFlag, setModFlag] = useState(false);
+    const showModForm = () => { setModFlag(!modFlag) }
 
-     /**
-      * fetch customer
-      */
+    /**
+     * @section CUSTOMER detail and mod form
+     * customer, setCustomer - customer detail from db
+     * name
+     * address
+     * phone
+     * email
+     * handledelete
+     * handleSubmit - mod customer
+     */
+    const [customer, setCustomer] = useState([]);
+    const [model, setModel] = useState({id: '', name: '', address: '', phone: '', email: ''});
+    const [name, setName] = useState(null);
+    const [address, setAddress] = useState(null);
+    const [phone, setPhone] = useState(null);
+    const [email, setEmail] = useState(null);
+    const handleDelete = customerId => { deleteCustomer(customerId) }
+    const handleSubmit = (e) => 
+    {
+        e.preventDefault(); 
+
+        let c = Object.assign({}, model);
+        c['id'] = customer.id;
+        c['name'] = name;
+        c['address'] = address;
+        c['phone'] = phone;
+        c['email'] = email;
+  
+        fetch( `/api/customers/${customer.id}`, 
+        {
+            method: 'put',
+            headers: 
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "X-CSRF-TOKEN": token
+            },
+            body: JSON.stringify(c)
+        })
+        .then(response => 
+        {
+            return response.json();
+        })
+    }
+
+    /**
+     * @section NOTES
+     */
+    const [notes, setNotes] = useState([]);
+
+    /**
+     * @section OFFERS
+     */
+    const [offers, setOffers] = useState([]);
+
+    /**
+     * @section QUOTATIONS
+     */
+    const [quotations, setQuotations] = useState([]);
+
+    //#############################################################
+
+    /**
+     * @section FETCH DATA
+     */
+
+    //customers
       useEffect(() => {
          let todo = true;
          getCustomerDetail(idDetail)
@@ -36,9 +93,7 @@ const CustomerDetail = ({idDetail, backToTable}) => {
          return () => todo = false;
      }, [idDetail])
 
-     /**
-     * fetch notes
-     */
+    //notes
       useEffect(() => {
         let todo = true;
         getNoteList(idDetail)
@@ -50,9 +105,7 @@ const CustomerDetail = ({idDetail, backToTable}) => {
         return () => todo = false;
     }, [idDetail])
 
-    /**
-     * fetch offers
-     */
+    //offers
      useEffect(() => {
         let todo = true;
         getOfferList(idDetail)
@@ -64,9 +117,7 @@ const CustomerDetail = ({idDetail, backToTable}) => {
         return () => todo = false;
     }, [idDetail])
 
-    /**
-     * fetch quotations
-     */
+    //quotations
      useEffect(() => {
         let todo = true;
         getQuotationList(idDetail)
@@ -78,15 +129,17 @@ const CustomerDetail = ({idDetail, backToTable}) => {
         return () => todo = false;
     }, [idDetail])
 
+    //##############################################################
+
     /**
-     * render
+     * @section RENDER
      */
     return (
         <div>
             <div className="card">
                 <div className="card-header">
                     <h2>Dettagli Cliente</h2>
-                    <span className="mr-1"><button onClick={backToTable}>Indietro</button></span>
+                    <span className="mr-1"><button>Indietro</button></span>
                     <span className="mr-1"><button onClick={showModForm}>Modifca</button></span>
                     <span className="mr-1"><button onClick={(e) => handleDelete(idDetail)}>Elimina</button></span>
                 </div>
@@ -118,10 +171,45 @@ const CustomerDetail = ({idDetail, backToTable}) => {
                             <p>E-mail: {customer.email}</p>
                             </div>
                         </div>
-                        </div>
-                        
+                        </div> 
                     : 
-                        <CustomerForm customer={customer} showForm={showModForm} />
+                        <div>
+                        <h2>Modifica</h2>
+                        <form onSubmit={(e) => handleSubmit(e)}>
+                            <div className="row">
+                            <div className="col-sm">
+                            <div className="form-group">
+                                <label>Nome:</label>
+                                <input type="text" name="name" defaultValue={customer.name} 
+                                onChange={(e) => setName(e.target.value)} className="form-control" />
+                            </div>
+            
+                            <div className="form-group">
+                                <label>Indirizzo:</label>
+                                <input type="text" name="address" defaultValue={customer.address} 
+                                onChange={(e) => setAddress(e.target.value)} className="form-control" />
+                            </div>
+                            </div>
+                            <div className="col-sm">
+                            <div className="form-group">
+                                <label>Telefono:</label>
+                                <input type="text" name="phone" defaultValue={customer.phone} 
+                                onChange={(e) => setPhone(e.target.value)} className="form-control" />
+                            </div>
+            
+                            <div className="form-group">
+                                <label>E-mail:</label>
+                                <input type="text" name="email" defaultValue={customer.email} 
+                                onChange={(e) => setEmail(e.target.value)} className="form-control" />
+                            </div>
+                            </div>
+                            </div>
+                            <div>
+                                <button onClick={showModForm}>Annulla</button>
+                                <button className="btn btn-primary">Invia</button>
+                            </div>
+                        </form>
+                        </div>
                     }
                     </div>
 
