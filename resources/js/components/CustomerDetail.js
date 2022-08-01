@@ -1,8 +1,5 @@
 import {useState, useEffect} from 'react';
-import {getCustomerDetail, deleteCustomer} from '../services/customers.js'
-import {getNoteList} from '../services/notes.js'
-import {getOfferList} from '../services/offers.js'
-import {getQuotationList} from '../services/quotations.js'
+
 
 /**
  * CustomerDetail
@@ -31,8 +28,7 @@ const CustomerDetail = ({idDetail}) => {
     const [address, setAddress] = useState(null);
     const [phone, setPhone] = useState(null);
     const [email, setEmail] = useState(null);
-    const handleDelete = customerId => { deleteCustomer(customerId) }
-    const handleSubmit = (e) => 
+    const handleCustomerModSubmit = (e) => 
     {
         e.preventDefault(); 
 
@@ -59,21 +55,133 @@ const CustomerDetail = ({idDetail}) => {
             return response.json();
         })
     }
+    const handleCustomerDelete = customerId => 
+    { 
+        fetch( `/api/customers/${customerId}`, 
+        {
+            method: 'delete', 
+            headers: 
+            {
+            'Accept': 'application/json', 
+            'Content-Type': 'application/json'
+            }
+        })
+        .then(data => data.json()) 
+    }
 
     /**
      * @section NOTES
      */
     const [notes, setNotes] = useState([]);
+    const [noteModel, setNoteModel] = useState({id: '', text: '', customer_id: ''});
+    const handleNoteSubmit = e => 
+    { 
+        e.preventDefault();
+        let n = Object.assign({}, noteModel); 
+        n['id'] = '';
+        n['text'] = e.target.value;
+        n['customer_id'] = customerId;
+        fetch('/api/notes/', 
+        {
+            method:'post',
+            headers: 
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(n)
+        })
+        .then(data => data.json()) 
+    }
+    const handleNoteDelete = noteId => 
+    { 
+        fetch( `/api/notes/${noteId}`, 
+        {
+            method: 'delete', 
+            headers: 
+            {
+            'Accept': 'application/json', 
+            'Content-Type': 'application/json'
+            }
+        })
+        .then(data => data.json());
+    }
 
     /**
      * @section OFFERS
      */
     const [offers, setOffers] = useState([]);
+    const [offerModel, setOfferModel] = useState({id: '', text: '', customer_id: ''});
+    const handleOfferSubmit = e => 
+    { 
+        e.preventDefault();
+        let o = Object.assign({}, offerModel); 
+        o['id'] = '';
+        o['text'] = e.target.value;
+        o['customer_id'] = customerId;
+        fetch('/api/offers/', 
+        {
+            method:'post',
+            headers: 
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(o)
+        })
+        .then(data => data.json())  
+    }
+    const handleOfferDelete = offerId => 
+    { 
+        fetch( `/api/offers/${offerId}`, 
+        {
+            method: 'delete', 
+            headers: 
+            {
+            'Accept': 'application/json', 
+            'Content-Type': 'application/json'
+            }
+        })
+        .then(data => data.json());
+    }
 
     /**
      * @section QUOTATIONS
      */
     const [quotations, setQuotations] = useState([]);
+    const [quotationModel, setQuotationModel] = useState({id: '', text: '', customer_id: ''});
+    const handleQuotationSubmit = e => 
+    { 
+        e.preventDefault();
+        let q = Object.assign({}, quotationModel); 
+        q['id'] = '';
+        q['text'] = e.target.value;
+        q['customer_id'] = customerId;
+        fetch('/api/quotations/', 
+        {
+            method:'post',
+            headers: 
+            {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(q)
+        })
+        .then(data => data.json()) 
+    }
+    const handleQuotationDelete = quotationId => 
+    { 
+        fetch( `/api/quotations/${quotationId}`, 
+        {
+            method: 'delete', 
+            headers: 
+            {
+            'Accept': 'application/json', 
+            'Content-Type': 'application/json'
+            }
+        })
+        .then(data => data.json());
+    }
 
     //#############################################################
 
@@ -82,21 +190,23 @@ const CustomerDetail = ({idDetail}) => {
      */
 
     //customers
-      useEffect(() => {
-         let todo = true;
-         getCustomerDetail(idDetail)
-             .then(customer => {
-                 if(todo) {
-                     setCustomer(customer)
-                 }
-             })
-         return () => todo = false;
-     }, [idDetail])
+    useEffect(() => {
+        let todo = true;
+        fetch(`/api/customers/${idDetail}`)
+            .then(data => data.json())
+            .then(customer => {
+                if(todo) {
+                    setCustomer(customer)
+                }
+            })
+        return () => todo = false;
+    }, [idDetail])
 
     //notes
-      useEffect(() => {
+    useEffect(() => {
         let todo = true;
-        getNoteList(idDetail)
+        fetch(`/api/notes/${idDetail}`)
+            .then(data => data.json())
             .then(notes => {
                 if(todo) {
                     setNotes(notes);
@@ -106,9 +216,10 @@ const CustomerDetail = ({idDetail}) => {
     }, [idDetail])
 
     //offers
-     useEffect(() => {
+    useEffect(() => {
         let todo = true;
-        getOfferList(idDetail)
+        fetch(`/api/offers/${idDetail}`)
+            .then(data => data.json())
             .then(offers => {
                 if(todo) {
                     setOffers(offers);
@@ -118,9 +229,10 @@ const CustomerDetail = ({idDetail}) => {
     }, [idDetail])
 
     //quotations
-     useEffect(() => {
+    useEffect(() => {
         let todo = true;
-        getQuotationList(idDetail)
+        fetch(`/api/quotations/${idDetail}`)
+        .then(data => data.json())
             .then(quotations => {
                 if(todo) {
                     setQuotations(quotations);
@@ -141,7 +253,7 @@ const CustomerDetail = ({idDetail}) => {
                     <h2>Dettagli Cliente</h2>
                     <span className="mr-1"><button>Indietro</button></span>
                     <span className="mr-1"><button onClick={showModForm}>Modifca</button></span>
-                    <span className="mr-1"><button onClick={(e) => handleDelete(idDetail)}>Elimina</button></span>
+                    <span className="mr-1"><button onClick={(e) => handleCustomerDelete(idDetail)}>Elimina</button></span>
                 </div>
             
                 <div className="card-body">
@@ -175,7 +287,7 @@ const CustomerDetail = ({idDetail}) => {
                     : 
                         <div>
                         <h2>Modifica</h2>
-                        <form onSubmit={(e) => handleSubmit(e)}>
+                        <form onSubmit={(e) => handleCustomerModSubmit(e)}>
                             <div className="row">
                             <div className="col-sm">
                             <div className="form-group">
@@ -228,12 +340,12 @@ const CustomerDetail = ({idDetail}) => {
                             {notes.map( n => ( 
                                 <tr key={n.id}>
                                     <td>{n.text}</td>
-                                    <td><button onClick={(e) => handleDelete(n.id)}>Elimina</button></td>
+                                    <td><button onClick={(e) => handleNoteDelete(n.id)}>Elimina</button></td>
                                 </tr>
                             ))}      
                             <tr>
                                 <td>
-                                    <form onSubmit={(e) => handleSubmit(e)}>
+                                    <form onSubmit={(e) => handleNoteSubmit(e)}>
                                     <input type="text" name="note" className="form-control" placeholder="Nuova nota..." />
                                     <button>Aggiungi</button>
                                     </form>
@@ -246,7 +358,7 @@ const CustomerDetail = ({idDetail}) => {
                                 <div className="card-body">
                                     <p>Nessuna nota per questo cliente.</p>
 
-                                    <form onSubmit={(e) => handleSubmit(e)}>
+                                    <form onSubmit={(e) => handleNoteSubmit(e)}>
                                         <input type="text" name="note" className="form-control" placeholder="Nuova nota..." />
                                         <button>Aggiungi</button>
                                     </form>
@@ -273,12 +385,12 @@ const CustomerDetail = ({idDetail}) => {
                                 {offers.map( o => ( 
                                     <tr key={o.id}>
                                         <td>{o.text}</td>
-                                        <td><button onClick={(e) => handleDelete(o.id)}>Elimina</button></td>
+                                        <td><button onClick={(e) => handleOfferDelete(o.id)}>Elimina</button></td>
                                     </tr>
                                 ))}      
                                 <tr>
                                     <td>
-                                        <form onSubmit={(e) => handleSubmit(e)}>
+                                        <form onSubmit={(e) => handleOfferSubmit(e)}>
                                         <input type="text" name="offer" className="form-control" placeholder="Nuova offerta..." />
                                         <button>Aggiungi</button>
                                         </form>
@@ -291,7 +403,7 @@ const CustomerDetail = ({idDetail}) => {
                                     <div className="card-body">
                                         <p>Nessuna offerta per questo cliente.</p>
 
-                                        <form onSubmit={(e) => handleSubmit(e)}>
+                                        <form onSubmit={(e) => handleOfferSubmit(e)}>
                                             <input type="text" name="note" className="form-control" placeholder="Nuova offerta..." />
                                             <button>Aggiungi</button>
                                         </form>
@@ -316,12 +428,12 @@ const CustomerDetail = ({idDetail}) => {
                                 {quotations.map( q => ( 
                                     <tr key={q.id}>
                                         <td>{q.text}</td>
-                                        <td><button onClick={(e) => handleDelete(q.id)}>Elimina</button></td>
+                                        <td><button onClick={(e) => handleQuotationDelete(q.id)}>Elimina</button></td>
                                     </tr>
                                 ))}      
                                 <tr>
                                     <td>
-                                        <form onSubmit={(e) => handleSubmit(e)}>
+                                        <form onSubmit={(e) => handleQuotationSubmit(e)}>
                                         <input type="text" name="quotation" className="form-control" placeholder="Nuovo preventivo..." />
                                         <button>Aggiungi</button>
                                         </form>
@@ -334,7 +446,7 @@ const CustomerDetail = ({idDetail}) => {
                                     <div className="card-body">
                                         <p>Nessun preventivo per questo cliente.</p>
 
-                                        <form onSubmit={(e) => handleSubmit(e)}>
+                                        <form onSubmit={(e) => handleQuotationSubmit(e)}>
                                             <input type="text" name="note" className="form-control" placeholder="Nuovo preventivo..." />
                                             <button>Aggiungi</button>
                                         </form>
